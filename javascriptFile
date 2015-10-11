@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript">
+var xmlDoc,xmlhttp, newWindow,hWin,html_text,root;
+function viewXML() {
+	
+	 var url = document.getElementById("textBox").value;
+	
+	if(url.trim().length==0)
+	{
+		alert("enter url");
+	}
+	else if(url==null)
+	{
+		alert("invalid");
+	}
+	else
+	{
+		if (window.XMLHttpRequest)
+		{// code for IE7+, Firefox, Chrome, Opera, Safari
+			xmlhttp=new XMLHttpRequest();
+		}
+		else
+		{// code for IE6, IE5
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.open("GET",url,false); //open, send, responseXML are
+		var flag =1;
+		xmlhttp.onreadystatechange = function()
+			{
+				if (xmlhttp.readyState == 4 && xmlhttp.status == 404)
+				{
+					alert("File not found!!!");
+					flag=0;
+					return;
+				}
+			}
+			if(flag==0)
+			{
+			return;
+			}
+			xmlhttp.send();
+		xmlDoc=xmlhttp.responseXML;
+		if( xmlDoc != null && xmlDoc.documentElement.tagName == "parsererror" )
+			{
+				alert( "Error in XML File");
+				return;
+			}
+	ELEMENT_NODE = 1;
+	x=100;y=100;
+	html_text="<html><head><title>XML Parse Result</title></head><body>";
+	html_text+="<table border='2'>";
+	
+	var planes=xmlDoc.getElementsByTagName("Row");
+	var planeNodeList=planes.item(0).childNodes;
+	if(planes.length==1)
+	{
+	alert("No Company in XML");
+	}	
+	for(var i=0;i<planes.length;i++)
+	{
+		planeNodeList=planes.item(i).childNodes; //get properties of a plane
+		html_text+="<tr>";
+		for(var j=0;j<planeNodeList.length;j++)
+		{ 
+			if(planeNodeList.item(j).nodeType==ELEMENT_NODE)
+			{
+			
+				if(planeNodeList.item(j).nodeName == "Data")
+				{
+					html_text+="<th>"+planeNodeList.item(j).firstChild.nodeValue+"</th>";
+				}
+				else if(planeNodeList.item(j).nodeName=="Logo")
+				{
+				
+				if(planeNodeList.item(j).childNodes[0] == null || planeNodeList.item(j).firstChild.nodeValue.trim().length == 0)	
+					{
+						html_text += "<td>NA</td>";
+					}
+				else
+					{
+						html_text+="<td><img src='"+planeNodeList.item(j).firstChild.nodeValue+"' width='"+x+"' height='"+y+"'></td>"; 
+					}
+				}
+				else if(planeNodeList.item(j).nodeName=="HomePage")
+				{
+				if(planeNodeList.item(j).childNodes[0] == null || planeNodeList.item(j).firstChild.nodeValue.trim().length == 0)	
+					{
+						html_text += "<td>NA</td>";
+					}
+					else{
+						html_text+="<td><a href='"+planeNodeList.item(j).firstChild.nodeValue+"'>link to Company</a></td>"; 
+						}
+				}
+				else
+				{
+					if(planeNodeList.item(j).childNodes[0] == null || planeNodeList.item(j).firstChild.nodeValue.trim().length == 0)	
+					{
+						html_text += "<td>NA</td>";
+					}
+					else{
+						html_text+="<td>"+planeNodeList.item(j).firstChild.nodeValue+"</td>";
+					}
+				}
+			}
+		}
+		html_text+="</tr>";
+	}
+	html_text+="</table><noscript></bo"+"dy></html>";
+	hWin = window.open("", "Assignment4", "height=800,width=800,scrollbars=yes");
+	hWin.document.write(html_text); 
+	hWin.document.close();
+	}
+}
+</script>
+</head>
+<body style='text-align:center; margin-top:15%'>
+<p><font size=4px>Enter URL for Company List XML file</p>
+<form method="POST">
+<input type="text" maxlength="2555" size="25" id="textBox" />
+<br><br>
+<input type="button" name="submit" value="Submit Query" onClick="viewXML()"/>
+</form>
+<noscript>
+</body>
+</html>
